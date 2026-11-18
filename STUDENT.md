@@ -4,7 +4,7 @@
 - MSHV: 2A202603323
 - Lớp (L2 / L3 / khác): <<>>
 - Tài khoản GitHub: BuffDarkAI
-- Repo bài nộp (URL): https://github.com/BuffDarkAI/K5-L23-DAY08-2A202603323-BuiSyTung-AIPrelabel
+- Repo bài nộp (URL): https://github.com/BuffDarkAI/K5-L2b-Day08-buisytung_2A202603323-AI-Assisted-Labeling
 - Commit chốt bài (hash): <<>>
 - Máy: Windows 11, NVIDIA RTX 3050 Ti Laptop 4GB (CUDA 12.4)
 - CVAT (Docker): <<phiên bản, ví dụ v2.81.0>>
