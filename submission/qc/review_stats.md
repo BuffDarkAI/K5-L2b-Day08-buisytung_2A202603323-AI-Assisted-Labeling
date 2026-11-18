@@ -28,7 +28,7 @@ Trong số deleted + added, **9 trường hợp là đổi lớp** (máy gán sa
 Ảnh gold: 4; đối tượng gold: 80 (mẫu số của recall)
 | | TP | FP | FN | Precision | Recall |
 |---|---|---|---|---|---|
-| Máy (pre-label) | 52 | 22 | 28 | 70.3% (KTC 95%: 59–79%) | 65.0% (KTC 95%: 54–75%) |
+| Máy (pre-label) | 56 | 18 | 24 | 75.7% (KTC 95%: 65–84%) | 70.0% (KTC 95%: 59–79%) |
 
 *Lạc quan: ngưỡng được chọn trên chính các ảnh gold này (in-sample), và chỉ có 4 ảnh. Đọc khoảng tin cậy, đừng đọc con số đơn.*
 

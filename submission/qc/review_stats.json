@@ -56,11 +56,11 @@
   "images": 4,
   "gold_objects": 80,
   "pre": {
-   "tp": 52,
-   "fp": 22,
-   "fn": 28,
-   "precision": 0.7027027027027027,
-   "recall": 0.65
+   "tp": 56,
+   "fp": 18,
+   "fn": 24,
+   "precision": 0.7567567567567568,
+   "recall": 0.7
   },
   "final": null,
   "residual_errors": null,
