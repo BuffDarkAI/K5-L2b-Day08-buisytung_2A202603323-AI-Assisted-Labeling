@@ -1,1 +1,13 @@
 run_id,part,model,params,split,n_boxes,sec_per_img,what_went_right,what_went_wrong,decision
+r01,2,yolo26-m,--model yolo26 --size m --split pilot --conf 0.25 --out work/prelabel/t_y26,pilot,215,0.5,Bắt được person/motorbike/car rõ,"Không có lớp ba bánh: tuk-tuk bị gọi car; nhiều lớp COCO thừa (umbrella, handbag) bị bỏ",Tham khảo
+r02,2,yolo26-m,--model yolo26 --size m --split pilot --conf 0.5 --out work/prelabel/t_y26_c05,pilot,140,0.33,Ít box rác hơn,conf 0.5 làm mất nhiều box đúng (215 -> 140 box),Không dùng conf 0.5
+r03,2,yoloe-s,--model yoloe --classes three_wheeler --split pilot --conf 0.25 --out work/prelabel/t_yoloe,pilot,8,0.24,YOLOE bắt được xe ba bánh bằng prompt,Chỉ 8 box trên 8 ảnh pilot,Dùng cho three_wheeler
+r04,2,yolo26-m+sam(sam2.1_b.pt),"--model yolo26 --size m --classes person,motorbike,car --images img_004.jpg img_013.jpg --conf 0.3 --segmenter sam --sam sam2.1_b.pt --out work/prelabel/t_sam",custom,16,1.72,SAM 2.1 tách mask theo box YOLO,"1.72 s/ảnh, chậm nhất",Chỉ dùng SAM cho Part 5
+r05,3,yolo26-m,--model yolo26 --size m --split all --conf 0.05 --out work/prelabel/y26_all --no-viz,all,1671,0.12,Sinh ứng viên conf 0.05 cho quét ngưỡng,"1671 box, nhiều rác cần lọc khi merge",Dùng làm nguồn --pred; ngưỡng mặc định 0.3
+r06,3,yoloe-s,--model yoloe --classes three_wheeler --split all --conf 0.05 --out work/prelabel/yoloe_all --no-viz,all,125,0.08,Sweep: three_wheeler=0.15 cho recall 100% trên 7 vật gold,Trên lô 24 ảnh three_wheeler bị deleted 19/37 = 51% (box trùng),--thr three_wheeler=0.15
+P5-sam2-img013,5,sam2.1_b.pt,"pos(400,480)(600,110) neg(720,300)",batch,1,,Bám viền mái/bánh/khung tốt,Dính người lái + khách; 1 neg không đủ; mask 45.4% ảnh,Thêm neg + box
+P5-mobilesam-img013,5,mobile_sam.pt,"pos(400,480)(600,110) neg(720,300)",batch,1,,Loại người lái tốt hơn SAM2.1,Viền lởm chởm; mask vỡ 2 polygon,Không dùng; chỉ để so sánh
+P5-sam2-img013-moreneg,5,sam2.1_b.pt,"3 pos + 5 neg + box(90,25,895,682)",batch,1,,Tách sạch người lái và khách,Còn vài đốm quanh chân người lái,Giữ
+P5-sam2-img004,5,sam2.1_b.pt,"pos(620,480)(700,560) neg(465,450)",batch,1,,Bám thân xe tốt,Loang xuống mặt đường dưới bánh trước,Thêm box
+P5-sam2-img004-box,5,sam2.1_b.pt,"2 pos + 2 neg + box(475,230,840,600)",batch,1,,Mask sạch,-,Giữ
+P5-sam2-img017,5,sam2.1_b.pt,"pos(560,420)(680,500) neg(645,355)",batch,1,,Bám thân/mái/bánh tốt,Điểm neg rơi trên mái nhưng không ảnh hưởng,Giữ
