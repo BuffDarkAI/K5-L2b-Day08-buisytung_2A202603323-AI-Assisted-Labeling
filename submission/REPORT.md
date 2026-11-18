@@ -6,7 +6,7 @@
 
 | Lớp | Model + cỡ | Ngưỡng | Vì sao (dẫn `run_id` trong `model_log.csv`) |
 |---|---|---|---|
-| person / bicycle / motorbike / car / bus / truck | YOLO26m (`yolo26m.pt`) | mặc định `--conf 0.3` cho cả 6 lớp | `threshold_sweep.md`: không ngưỡng nào ≤ 0.5 đạt recall 90% (person tối đa 76%/41 vật, motorbike 63%/19, car 83%/6, bicycle 67%/6); bus (1 vật) và truck (0 vật) quá ít để chọn. Chạy ứng viên ở conf 0.05 (`r05`) rồi lọc lúc merge |
+| person / bicycle / motorbike / car / bus / truck | YOLO26m (`yolo26m.pt`) | mặc định `--conf 0.3` cho cả 6 lớp | `threshold_sweep.md`: không ngưỡng nào ≤ 0.5 đạt recall 90% (person tối đa 84%/37 vật, motorbike 63%/19, bicycle 67%/6); bus (1 vật) và truck (0 vật) quá ít để chọn. Chạy ứng viên ở conf 0.05 (`r05`) rồi lọc lúc merge. **Ghi chú:** sau khi sửa 4 box gold `person` → `car`, chạy lại sweep thì gợi ý thêm `car=0.5` (recall 90%, precision 69% trên 10 vật). Nhưng lô 24 ảnh đã được pre-label và duyệt với `car` ở 0.3 từ trước, nên mình giữ nguyên recipe cũ, không merge lại |
 | three_wheeler | YOLOE-26s, prompt `three_wheeler` | **0.15** | `threshold_sweep.md`: recall 100%, precision 78% trên 7 vật gold (`r06`). Ở `r01`/`r02`, YOLO26 không có lớp ba bánh nên tuk-tuk bị gọi `car` |
 
 - Lệnh `merge_prelabels.py` đã dùng (dán nguyên): `python scripts/merge_prelabels.py work/prelabel/yoloe_all/pre.coco.json work/prelabel/y26_all/pre.coco.json --conf 0.3 --thr three_wheeler=0.15 --split batch,gold --out work/prelabel/merged_review/pre.coco.json` → 606 box trên 28 ảnh (YOLOE đứng trước nên được ưu tiên khi chồng box, `--iou 0.6` mặc định)
@@ -35,7 +35,7 @@
   - **`three_wheeler`**: deleted 19/37 box máy = 51%, edited 7/37 = 19%. YOLOE ở ngưỡng 0.15 sinh box trùng và box ở chỗ không có xe (img_003 #11, #14).
   - **`truck`**: deleted 5/6 box máy = 83%, nhưng mẫu quá nhỏ để kết luận.
   - **`car`** bị **sót** nhiều nhất: added 20, trên 73 car sau duyệt = 27%.
-- So với gold: máy có precision **52/74 = 70.3%** (KTC 95%: 59–79%) và recall **52/80 = 65.0%** (KTC 95%: 54–75%), mẫu số là 80 đối tượng gold trên 4 ảnh.
+- So với gold: máy có precision **56/74 = 75.7%** (KTC 95%: 65–84%) và recall **56/80 = 70.0%** (KTC 95%: 59–79%), mẫu số là 80 đối tượng gold trên 4 ảnh. Đây là số **sau khi sửa gold** (xem mục 8). Trước khi sửa: 52/74 = 70.3% và 52/80 = 65.0%.
 
 ## 3. Thiên kiến tự động hóa và ảnh bẫy
 
@@ -51,7 +51,7 @@
   - Mình gán gold trước, nên lúc duyệt đã quen CVAT và quen kiểu cảnh phố; điều này làm thời gian duyệt có lợi hơn thực tế.
   - Ngược lại, ảnh batch đông hơn (564/24 ≈ 23.5 đối tượng/ảnh, so với 80/4 = 20 ở gold). Thời gian duyệt còn gồm cả việc xoá box trùng `three_wheeler` và các box rác.
   - Chỉ có 4 ảnh gold, nên con số 3.75 phút/ảnh rất kém chắc chắn.
-- Kết luận: **có, nhưng chỉ cho `person` và `motorbike`**. Lợi ích nằm ở việc đỡ phải vẽ box hơn là ở thời gian: thời gian/đối tượng gần như không đổi (0.18 so với 0.19 phút), và nếu tính cả vòng duyệt lại bẫy thì duyệt còn chậm hơn (0.21 phút). Hai lớp này có accepted 252/270 = 93.3% và 118/138 = 85.5% (mẫu số là số box máy của lớp đó, theo bảng theo lớp trong `review_stats.md`). **Không** nên tin `three_wheeler` (deleted 19/37 box máy = 51%) và `car` (added 20/73 = 27% số car sau duyệt bị máy sót). Precision/recall của máy so với gold (70.3% / 65.0% trên 80 vật) cho thấy pre-label chỉ là điểm khởi đầu, không thay được bước duyệt.
+- Kết luận: **có, nhưng chỉ cho `person` và `motorbike`**. Lợi ích nằm ở việc đỡ phải vẽ box hơn là ở thời gian: thời gian/đối tượng gần như không đổi (0.18 so với 0.19 phút), và nếu tính cả vòng duyệt lại bẫy thì duyệt còn chậm hơn (0.21 phút). Hai lớp này có accepted 252/270 = 93.3% và 118/138 = 85.5% (mẫu số là số box máy của lớp đó, theo bảng theo lớp trong `review_stats.md`). **Không** nên tin `three_wheeler` (deleted 19/37 box máy = 51%) và `car` (added 20/73 = 27% số car sau duyệt bị máy sót). Precision/recall của máy so với gold (75.7% / 70.0% trên 80 vật) cho thấy pre-label chỉ là điểm khởi đầu, không thay được bước duyệt.
 - **Ba quy tắc giảm thiên kiến của bạn** (mỗi quy tắc kiểm tra được bằng số hoặc việc làm):
   1. **Quét ảnh trước, xem nhãn sau**: ẩn hết box (nút con mắt), đếm nhẩm số người/xe, rồi mới bật nhãn máy lên và so số đếm với số box. Kiểm bằng số: bắt bẫy ở **lần duyệt mù đầu tiên** phải ≥ 80% (lần này chỉ đạt 5/12 = 41.7%).
   2. **Không tin box nào chỉ vì conf cao**: với `three_wheeler`, xem từng box và xoá box trùng IoU ≥ 0.5 trên cùng một xe (CAL-01). Kiểm bằng số: sau duyệt, số cặp box cùng lớp có IoU ≥ 0.5 phải bằng 0 (img_003 có box trùng ở conf 0.80).
@@ -88,6 +88,8 @@
 
 ## 7. QC và quyết định (Part 6)
 
+### Vòng 1 (phiếu lưu ở `qc/qc_review_round1.csv`, báo cáo ở `qc/qc_report_round1.md`)
+
 - Mẫu: **5 ảnh** (0 ảnh `can_review` + 5 ngẫu nhiên, seed 42: img_003, img_006, img_014, img_031, img_035), **120 đối tượng**. Người kiểm là chính mình (**hạn chế**: mình vừa là người duyệt, dễ mù với chính lỗi của mình).
 - Lỗi theo **đối tượng**: **5/120 = 4.2%**. Theo **ảnh**: **2/5 = 40.0%**, so với ngưỡng Release ≤ 2%.
 - Top lỗi:
@@ -100,7 +102,7 @@
   - **Không kiểm được**: box có ôm sát vật thật không; vật mà cả máy và mình cùng bỏ sót; box trùng hay box gán cho vật không phải người (mũ). Box trùng thậm chí còn được tính là "accepted". Mình có thực sự quét ảnh trước khi nhìn nhãn máy hay không cũng không script nào kiểm được.
   - Tất cả những thứ không kiểm được ở trên chỉ phát hiện được bằng mắt.
 
-**Quyết định: Rework**, ngày 2026-11-18. Lý do, đi theo thứ tự Hold → Rework → Release:
+**Quyết định vòng 1: Rework**, ngày 2026-11-18. Lý do, đi theo thứ tự Hold → Rework → Release:
 - **Hold?** Không. Câu mở còn lại (1, 3, 5, 7) không có ca trong lô nên không làm đổi nhãn nào; dữ liệu ảnh không hỏng.
 - **Rework?** Có. Ảnh lỗi 2/5 = 40% > 2%, và có **lỗi hệ thống**: "thừa" chiếm 4/5 lỗi, lặp lại ở 2/5 ảnh. Bắt bẫy cuối đạt 12/12, nhưng lần duyệt mù chỉ 5/12.
 
@@ -109,10 +111,30 @@ Việc cần làm tiếp:
 2. Rà **toàn bộ 26 box `three_wheeler`** trong lô để tìm box trùng (theo CAL-01), vì đây là lỗi hệ thống chứ không chỉ ở 1 ảnh.
 3. Export các ảnh đã sửa thành `submission/labels/qc_fixed.json`, chạy lại `build_release.py` và `qc_sample.py --force`, rồi ghi vòng QC 2 vào báo cáo.
 
+### Vòng 2 (sau khi sửa: `labels/qc_fixed.json`, phiếu `qc/qc_review.csv`, báo cáo `qc/qc_report_auto.md`)
+
+- **Đã sửa trên CVAT** (`qc_fixed.json` gồm 4 ảnh, thay bản cũ trong `release/final_det.coco.json`, xem `release_manifest.json`):
+  - img_003: xoá 3 box `three_wheeler` trùng hoặc sai chỗ (#10, #11, #14 của vòng 1), 1 box `three_wheeler` sai ở người đi xe máy bên trái, 2 box `person` đè lên chiếc xe máy bên phải (#17 và một box trùng của nó), 1 `ignore_region` thừa ở mép phải (chỉ có sạp hàng); kéo lại box xe máy đỗ ở giữa.
+  - img_031: xoá #496 (cái mũ).
+  - img_004: kéo dài box người bên trái xuống tới chân (cao 60 → 105 px).
+  - img_027: kéo dài box người ngồi sau (cao 31 → 80 px), xoá 1 box `person` chỉ ôm nửa trên của người đội mũ vàng (trùng với box cả người).
+  - Release sau sửa: 24 ảnh, **572 đối tượng** (trước: 581); `three_wheeler` còn 22 (trước: 26).
+- Mẫu: `qc_sample.py --seed 42 --force` cho lại **đúng 5 ảnh cũ**, **113 đối tượng**. Kiểm lại bằng ảnh có ID trong `work/qc/review/`. Người kiểm: mình, kèm trợ lý AI (Claude) soi overlay và cắt phóng to từng vùng nghi ngờ; mình xác nhận lại. Tức là vẫn **chưa có người thứ hai độc lập**.
+- Lỗi theo **đối tượng**: **2/113 = 1.8%** (vòng 1: 5/120 = 4.2%). Theo **ảnh**: **2/5 = 40.0%** (không đổi), so với ngưỡng ≤ 2%.
+  - img_014 #162/#163 `motorbike` gần trùng (IoU 0.87) trên cùng đống xe đỗ: **thừa**.
+  - img_031 #487 `person`: box dừng ở ngang hông trong khi chân vẫn nhìn thấy qua nan bánh xe đạp: **sai vị trí/kích thước**. Vòng 1 đã bỏ sót lỗi này, đúng kiểu mù với lỗi của chính mình.
+  - Không còn lỗi hệ thống: "thừa `three_wheeler`" không còn xuất hiện; 2 lỗi còn lại khác loại nhau.
+- Cận trên Wilson 95% của tỉ lệ ảnh lỗi vẫn là **77%** (2/5). Mẫu 5 ảnh vẫn không chứng minh được lô đạt ≤ 2%.
+
+**Quyết định vòng 2: vẫn Rework**, ngày 2026-11-18.
+- **Hold?** Không (như vòng 1).
+- **Rework?** Có: ảnh lỗi 2/5 = 40% > 2%. Lỗi theo đối tượng đã giảm còn 1.8% và hết lỗi hệ thống, nhưng ngưỡng Release tính theo ảnh.
+- Việc tiếp theo: sửa img_014 #162/#163 và img_031 #487 trên CVAT, thêm vào `qc_fixed.json`; rà các ảnh còn lại của lô theo 2 kiểu lỗi này (box trùng ở cụm xe đỗ; box người bị cắt khi chân nhìn thấy qua bánh xe); rồi lấy mẫu QC **mới** (seed khác) để không chấm lại đúng những ảnh đã sửa.
+
 ## 8. Ghi chú cá nhân
 
 - **Dùng AI để làm bài** (công cụ nào, việc gì, kiểm tra thế nào; "không dùng" nếu không): <<>>
-- Gold có bị nhiễm không (bạn có nhìn pre-label hay hỏi AI trước khi gán xong)? <<không / có, như sau: ...>>
+- Gold có bị nhiễm không (bạn có nhìn pre-label hay hỏi AI trước khi gán xong)? **Có, một phần.** Lúc gán gold mình không nhìn pre-label. Nhưng **sau** khi đã có số so sánh với máy, mình sửa 4 box gold bị gán nhầm lớp `person` cho xe hơi (img_012 ×3, img_020 ×1). Nguyên nhân là CVAT để sẵn nhãn mặc định `person` khi vẽ box. Các box này được phát hiện nhờ so với máy, và đã nhìn ảnh để xác nhận là xe hơi. Mình **không** đổi box gold nào chỉ vì khác máy: các ca lấp lửng (img_001 `car`/`truck`, `motorbike`/`bicycle`) giữ nguyên. Gold vẫn còn 20 box cao < 20 px (img_001, img_036) chưa gom vào `ignore_region`. Sửa gold làm precision/recall của máy tăng từ 70.3%/65.0% lên 75.7%/70.0%.
 - Máy / GPU / CVAT dùng; vướng mắc cài đặt: <<>>
 - Dùng cache `data/cache/` thay vì tự chạy? <<không / có, vì ...>>
 - Lỗi / bug script đã gặp (nếu có): <<>>

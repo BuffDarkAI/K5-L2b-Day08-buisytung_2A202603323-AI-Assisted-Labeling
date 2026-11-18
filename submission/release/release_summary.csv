@@ -1,9 +1,9 @@
 class,count
-person,300
+person,296
 bicycle,11
 motorbike,157
 car,74
 bus,6
 truck,4
-three_wheeler,26
-ignore_region,3
+three_wheeler,22
+ignore_region,2

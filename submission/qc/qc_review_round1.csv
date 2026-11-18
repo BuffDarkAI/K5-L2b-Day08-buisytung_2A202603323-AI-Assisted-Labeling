@@ -1,0 +1,9 @@
+image,object_id,error_type,reviewer,note
+img_003.jpg,11,thua,self,"three_wheeler conf 0.21 trùng xe đẩy hàng #24 (box lệch lên phần mái che phía sau), nhân đôi"
+img_003.jpg,10,thua,self,"three_wheeler trùng xe đẩy hàng đã có #24 (box chỉ ôm thùng xe), 2 box cho 1 vật"
+img_003.jpg,14,thua,self,"three_wheeler conf 0.20 ở cạnh xe máy đỗ #28, không có xe ba bánh ở đó"
+img_003.jpg,17,sai_lop,self,"box 200x161 ôm chiếc xe máy bên phải, gán person; nghi vẽ nhầm lớp (cần xác nhận lại trong CVAT)"
+img_006.jpg,,khong,self,"ngõ đông người; không thấy lỗi rõ ở mức nhìn overlay"
+img_014.jpg,,khong,self,
+img_031.jpg,496,thua,self,"person conf 0.34 thực ra là cái mũ lưỡi trai treo trên giá"
+img_035.jpg,,khong,self,"#578 person nhỏ nằm trong #555 ở mép trái: nghi trùng nhưng chưa chắc (có thể người phía sau)"

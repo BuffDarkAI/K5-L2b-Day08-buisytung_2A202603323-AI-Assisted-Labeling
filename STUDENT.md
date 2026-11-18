@@ -12,8 +12,8 @@
 ## Kết quả tóm tắt (điền cuối bài; số lấy từ `submission/qc/*`, kèm mẫu số)
 
 - Máy: accepted / edited / deleted: 85.2% / 5.4% / 8.8% (443 / 28 / 46, mẫu số: 520 box máy); added: 16.5% (93, mẫu số: 564 đối tượng sau duyệt)
-- So với gold: precision / recall của **máy** 52/74 = 70.3% / 52/80 = 65.0% (80 đối tượng gold, 4 ảnh)
+- So với gold: precision / recall của **máy** 56/74 = 75.7% / 56/80 = 70.0% (80 đối tượng gold, 4 ảnh; sau khi sửa 4 box gold sai lớp)
 - Bắt bẫy: 12/12 = 100% sau 4 vòng duyệt; lần duyệt mù đầu tiên chỉ 5/12 = 41.7%
 - Thời gian: gán tay 3.75 phút/ảnh (15 phút / 4 ảnh); duyệt có pre-label 4.17 phút/ảnh (100 phút / 24 ảnh); cộng 20 phút duyệt lại bẫy thì 5.0 phút/ảnh
-- Lỗi QC: 40.0% theo ảnh (2/5), 4.2% theo đối tượng (5/120); cận trên Wilson 95% của tỉ lệ ảnh lỗi: 77%
-- **Quyết định:** Rework — lý do một dòng: ảnh lỗi 2/5 = 40% > 2% và có lỗi hệ thống 'thừa' (box `three_wheeler` trùng của YOLOE) chiếm 4/5 lỗi
+- Lỗi QC: vòng 1: 40.0% theo ảnh (2/5), 4.2% theo đối tượng (5/120). Vòng 2, sau khi sửa (`qc_fixed.json`): 40.0% theo ảnh (2/5), 1.8% theo đối tượng (2/113). Cận trên Wilson 95% của tỉ lệ ảnh lỗi: 77%
+- **Quyết định:** Rework — lý do một dòng: vòng 1 có ảnh lỗi 40% và lỗi hệ thống (box `three_wheeler` trùng). Vòng 2 đã hết lỗi hệ thống nhưng ảnh lỗi vẫn 2/5 = 40% > 2%
