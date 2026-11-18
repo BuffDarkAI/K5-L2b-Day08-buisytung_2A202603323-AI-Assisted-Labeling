@@ -1,0 +1,6 @@
+image,object_id,error_type,reviewer,note
+img_003.jpg,,khong,self+claude,"vòng 2: đã xoá 3 box three_wheeler trùng/sai chỗ và 2 box person đè lên xe máy; cả xe đẩy chỉ còn 1 box #19; #17/#24 là người lái + người ngồi sau, không trùng"
+img_006.jpg,,khong,self+claude,"ngõ đông người; không thấy lỗi rõ ở mức nhìn overlay"
+img_014.jpg,163,thua,self+claude,"#162 và #163 motorbike gần trùng nhau (IoU 0.87) trên cùng đống xe đỗ bên phải: 2 box cho 1 vị trí"
+img_031.jpg,487,sai_vi_tri_kich_thuoc,self+claude,"box người bán hàng dừng ở ngang hông (y≈435) nhưng chân vẫn nhìn thấy qua nan bánh xe đạp đến y≈675; vòng 1 bỏ sót"
+img_035.jpg,,khong,self+claude,"#569 là người bị che phía sau #546 (thấy mặt), không phải box trùng"

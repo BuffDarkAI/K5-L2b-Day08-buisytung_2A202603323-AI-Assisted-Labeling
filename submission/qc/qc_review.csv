@@ -1,6 +1,10 @@
 image,object_id,error_type,reviewer,note
-img_003.jpg,,khong,self+claude,"vòng 2: đã xoá 3 box three_wheeler trùng/sai chỗ và 2 box person đè lên xe máy; cả xe đẩy chỉ còn 1 box #19; #17/#24 là người lái + người ngồi sau, không trùng"
-img_006.jpg,,khong,self+claude,"ngõ đông người; không thấy lỗi rõ ở mức nhìn overlay"
-img_014.jpg,163,thua,self+claude,"#162 và #163 motorbike gần trùng nhau (IoU 0.87) trên cùng đống xe đỗ bên phải: 2 box cho 1 vị trí"
-img_031.jpg,487,sai_vi_tri_kich_thuoc,self+claude,"box người bán hàng dừng ở ngang hông (y≈435) nhưng chân vẫn nhìn thấy qua nan bánh xe đạp đến y≈675; vòng 1 bỏ sót"
-img_035.jpg,,khong,self+claude,"#569 là người bị che phía sau #546 (thấy mặt), không phải box trùng"
+img_004.jpg,,khong,self+claude,"vòng 3: box người bên trái đã kéo tới chân; 4 tuk-tuk mỗi xe 1 box"
+img_008.jpg,,khong,self+claude,"xe đẩy hàng gán three_wheeler đúng theo CAL-01; không thấy lỗi rõ"
+img_017.jpg,,khong,self+claude,
+img_024.jpg,351,bo_sot,self+claude,"xe tay ga dưới người #351 (góc dưới trái) nhìn rõ nhưng không có box motorbike"
+img_024.jpg,349,bo_sot,self+claude,"xe máy dưới người #349 không có box motorbike"
+img_024.jpg,345,bo_sot,self+claude,"xe máy dưới người #345 (mép trái) không có box motorbike"
+img_024.jpg,338,bo_sot,self+claude,"xe máy dưới người #338 (góc dưới trái) không có box motorbike"
+img_024.jpg,,bo_sot,self+claude,"đám đông xe máy dày đặc góc trên phải (~x 800-1024, y 60-200) không có ignore_region; các xe quanh #342 #347 #333 cũng không có box"
+img_034.jpg,,khong,self+claude,"vòng 3: hàng xe đỗ bên phải mỗi xe 1 box"

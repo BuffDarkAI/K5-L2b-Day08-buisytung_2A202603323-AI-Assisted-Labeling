@@ -111,7 +111,7 @@ Việc cần làm tiếp:
 2. Rà **toàn bộ 26 box `three_wheeler`** trong lô để tìm box trùng (theo CAL-01), vì đây là lỗi hệ thống chứ không chỉ ở 1 ảnh.
 3. Export các ảnh đã sửa thành `submission/labels/qc_fixed.json`, chạy lại `build_release.py` và `qc_sample.py --force`, rồi ghi vòng QC 2 vào báo cáo.
 
-### Vòng 2 (sau khi sửa: `labels/qc_fixed.json`, phiếu `qc/qc_review.csv`, báo cáo `qc/qc_report_auto.md`)
+### Vòng 2 (phiếu `qc/qc_review_round2.csv`, báo cáo `qc/qc_report_round2.md`)
 
 - **Đã sửa trên CVAT** (`qc_fixed.json` gồm 4 ảnh, thay bản cũ trong `release/final_det.coco.json`, xem `release_manifest.json`):
   - img_003: xoá 3 box `three_wheeler` trùng hoặc sai chỗ (#10, #11, #14 của vòng 1), 1 box `three_wheeler` sai ở người đi xe máy bên trái, 2 box `person` đè lên chiếc xe máy bên phải (#17 và một box trùng của nó), 1 `ignore_region` thừa ở mép phải (chỉ có sạp hàng); kéo lại box xe máy đỗ ở giữa.
@@ -130,6 +130,25 @@ Việc cần làm tiếp:
 - **Hold?** Không (như vòng 1).
 - **Rework?** Có: ảnh lỗi 2/5 = 40% > 2%. Lỗi theo đối tượng đã giảm còn 1.8% và hết lỗi hệ thống, nhưng ngưỡng Release tính theo ảnh.
 - Việc tiếp theo: sửa img_014 #162/#163 và img_031 #487 trên CVAT, thêm vào `qc_fixed.json`; rà các ảnh còn lại của lô theo 2 kiểu lỗi này (box trùng ở cụm xe đỗ; box người bị cắt khi chân nhìn thấy qua bánh xe); rồi lấy mẫu QC **mới** (seed khác) để không chấm lại đúng những ảnh đã sửa.
+
+### Vòng 3 (`labels/qc_fixed.json` 6 ảnh, phiếu `qc/qc_review.csv`, báo cáo `qc/qc_report_auto.md`)
+
+- **Đã sửa thêm trên CVAT:** img_014 gộp 2 box xe máy trùng thành 1, chỉnh khít 1 box xe máy khác; img_031 kéo box người bán hàng xuống tới chân (cao 302 → 547 px); img_034 xoá 1 trong 2 box xe máy trùng ở hàng xe đỗ (cặp này do mình quét cả lô tìm box cùng lớp IoU ≥ 0.7, nằm ngoài mẫu QC). Release: 24 ảnh, **570 đối tượng**, 6 ảnh thay bằng bản sửa.
+- Mẫu: `qc_sample.py --n 5 --seed 43 --force` → img_004, img_008, img_017, img_024, img_034, **115 đối tượng**. Seed 43 là seed kế tiếp sau 42, chọn trước khi xem mẫu.
+  - Ghi nhận trung thực: trước khi chốt, trợ lý AI đã chạy thử xem mẫu của seed 43, 44, 45. Mình vẫn giữ seed 43 đã định trước, dù mẫu này có 2 ảnh vừa sửa (img_004, img_034), để không chọn seed theo kết quả.
+- Lỗi theo **đối tượng**: **5/115 = 4.3%**. Theo **ảnh**: **1/5 = 20.0%** > 2%.
+  - Cả 5 lỗi là **bỏ sót** ở img_024, ảnh ngã tư ban đêm có vệt nhòe chuyển động. Ảnh có 14 `person` nhưng chỉ 1 `motorbike`: xe máy dưới người #351, #349, #345, #338 (góc dưới trái) nhìn thấy nhưng không có box. Đám đông xe máy dày đặc ở góc trên phải không có box và cũng không có `ignore_region`.
+  - Script đánh dấu **lỗi hệ thống** ('bỏ sót' 5/5 lỗi). Thực chất cả 5 lỗi nằm trong 1 ảnh khó, nhưng vẫn cho thấy một kiểu lỗi lặp lại: khi duyệt ảnh đông, mình gán người lái mà quên xe, và không dùng `ignore_region` cho cụm xe không tách được.
+- Cận trên Wilson 95% của tỉ lệ ảnh lỗi: **62%** (1/5).
+
+**Quyết định vòng 3: vẫn Rework**, ngày 2026-11-18.
+- **Hold?** Không.
+- **Rework?** Có: ảnh lỗi 1/5 = 20% > 2%, và có lỗi lặp 'bỏ sót'.
+- Xu hướng qua 3 vòng: lỗi hệ thống 'thừa `three_wheeler`' (vòng 1) đã hết; box trùng và box bị cắt (vòng 2) đã sửa. Nhưng mỗi mẫu mới lại tìm ra lỗi mới, đúng như cận trên Wilson cảnh báo: mẫu 5 ảnh không chứng minh được lô sạch.
+- Việc tiếp theo:
+  1. img_024: vẽ box `motorbike` cho các xe có người lái đã gán; dùng `ignore_region` cho đám xe dày đặc góc trên phải và các vệt nhòe không tách được.
+  2. Rà lại **mọi ảnh đông** trong lô (img_006, img_018, img_024, img_035…) với 2 câu hỏi: mỗi `person` đang lái xe đã có box xe chưa; cụm không tách được đã có `ignore_region` chưa.
+  3. Thêm vào checklist duyệt: "người lái → kiểm xe".
 
 ## 8. Ghi chú cá nhân
 
