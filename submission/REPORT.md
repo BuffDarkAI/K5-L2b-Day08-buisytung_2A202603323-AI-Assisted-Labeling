@@ -75,7 +75,7 @@
 
 ## 6. Calibration (Part 6)
 
-- Số quyết định: **6** (`calibration_decisions.csv`: CAL-01 → CAL-06). Nguồn gồm 2 `loi_may`, 3 `cau_hoi_mo`, 1 `bay_lot`. Quan trọng nhất là **CAL-01**: 1 vật = 1 box, gộp box `three_wheeler` trùng. Đây là lỗi hệ thống của YOLOE, và cũng là lỗi QC gặp nhiều nhất.
+- Số quyết định: **7** (`calibration_decisions.csv`: CAL-01 → CAL-07). Nguồn gồm 2 `loi_may`, 3 `cau_hoi_mo`, 1 `bay_lot`, 1 `self_check` (CAL-07: người lái → kiểm xe, rút ra từ QC vòng 3). Quan trọng nhất là **CAL-01**: 1 vật = 1 box, gộp box `three_wheeler` trùng. Đây là lỗi hệ thống của YOLOE, và cũng là lỗi QC gặp nhiều nhất.
 - Quy tắc mới đã vào `guideline_v1.1_calibrated.md`:
   - Gộp box cùng lớp chồng nhau (IoU ≥ 0.5) trên một vật.
   - `person` không gồm quần áo hay mũ treo trong cửa hàng.
@@ -131,7 +131,7 @@ Việc cần làm tiếp:
 - **Rework?** Có: ảnh lỗi 2/5 = 40% > 2%. Lỗi theo đối tượng đã giảm còn 1.8% và hết lỗi hệ thống, nhưng ngưỡng Release tính theo ảnh.
 - Việc tiếp theo: sửa img_014 #162/#163 và img_031 #487 trên CVAT, thêm vào `qc_fixed.json`; rà các ảnh còn lại của lô theo 2 kiểu lỗi này (box trùng ở cụm xe đỗ; box người bị cắt khi chân nhìn thấy qua bánh xe); rồi lấy mẫu QC **mới** (seed khác) để không chấm lại đúng những ảnh đã sửa.
 
-### Vòng 3 (`labels/qc_fixed.json` 6 ảnh, phiếu `qc/qc_review.csv`, báo cáo `qc/qc_report_auto.md`)
+### Vòng 3 (phiếu `qc/qc_review_round3.csv`, báo cáo `qc/qc_report_round3.md`)
 
 - **Đã sửa thêm trên CVAT:** img_014 gộp 2 box xe máy trùng thành 1, chỉnh khít 1 box xe máy khác; img_031 kéo box người bán hàng xuống tới chân (cao 302 → 547 px); img_034 xoá 1 trong 2 box xe máy trùng ở hàng xe đỗ (cặp này do mình quét cả lô tìm box cùng lớp IoU ≥ 0.7, nằm ngoài mẫu QC). Release: 24 ảnh, **570 đối tượng**, 6 ảnh thay bằng bản sửa.
 - Mẫu: `qc_sample.py --n 5 --seed 43 --force` → img_004, img_008, img_017, img_024, img_034, **115 đối tượng**. Seed 43 là seed kế tiếp sau 42, chọn trước khi xem mẫu.
@@ -149,6 +149,24 @@ Việc cần làm tiếp:
   1. img_024: vẽ box `motorbike` cho các xe có người lái đã gán; dùng `ignore_region` cho đám xe dày đặc góc trên phải và các vệt nhòe không tách được.
   2. Rà lại **mọi ảnh đông** trong lô (img_006, img_018, img_024, img_035…) với 2 câu hỏi: mỗi `person` đang lái xe đã có box xe chưa; cụm không tách được đã có `ignore_region` chưa.
   3. Thêm vào checklist duyệt: "người lái → kiểm xe".
+
+### Vòng 4 (`labels/qc_fixed.json` 13 ảnh, phiếu `qc/qc_review.csv`, báo cáo `qc/qc_report_auto.md`)
+
+- **Sửa theo lỗi vòng 3, do trợ lý AI (Claude) thực hiện thẳng trong `qc_fixed.json`** (không qua CVAT), mình xem lại kết quả:
+  - **Quét cả lô tìm xe bị sót:** lấy các box `motorbike`/`bicycle` mà YOLO26 sinh ở conf ≥ 0.15 (`work/prelabel/y26_all`), không trùng box nào đã có (IoU < 0.3) và không nằm trong `ignore_region` → 45 ứng viên. Xem từng ứng viên trên ảnh cắt phóng to. Chỉ thêm **7 xe thấy rõ** (img_005, 018, 022, 026, 027, 028, 033; giữ nguyên box của YOLO). Bỏ qua phần còn lại: là một phần của xe đã có box, là xích lô đã gán `three_wheeler`, nằm trong hàng xe đỗ dày, hoặc bị che quá nhiều.
+  - **img_024:** YOLO không bắt được xe nhòe, nên vẽ tay theo lưới tọa độ 6 box `motorbike` dưới các người lái (#331, #338, #343, #345, #349, #351; 5 box ở vùng nhòe được tick `can_review`), cộng 4 `ignore_region`: đám đông góc trên phải, đám xe giữa ngã tư, cụm người lái bên phải, dải vệt nhòe dưới cùng.
+  - Release: 24 ảnh, **587 đối tượng** (`motorbike` 155 → 168, `ignore_region` 2 → 6), 13 ảnh thay bằng bản sửa.
+- Mẫu: `qc_sample.py --n 5 --seed 44 --force` → **1 ca khó** (img_024, vì có box `can_review`) + 5 ngẫu nhiên (img_006, 023, 027, 028, 035), **203 đối tượng**. Seed 44 là seed kế tiếp. (Ghi nhận: ở vòng 3, AI đã chạy thử xem trước mẫu seed 44 trên bản release cũ; mẫu bây giờ khác vì có thêm ca khó img_024.)
+- Lỗi: **0/203 đối tượng**, **0/6 ảnh**. Cận trên Wilson 95% của tỉ lệ ảnh lỗi: **39%**.
+
+**Quyết định vòng 4: Release**, ngày 2026-11-18. Đi theo cây quyết định:
+- **Hold?** Không: guideline đã có quy tắc cho các ca gặp trong lô; ảnh không hỏng.
+- **Rework?** Không: ảnh lỗi 0/6 ≤ 2%, không còn lỗi lặp, bắt bẫy 12/12 ≥ 80%.
+- **Release** — nhưng phải đọc kèm các giới hạn sau:
+  1. Mẫu 6 ảnh sạch chỉ cho biết tỉ lệ ảnh lỗi thật **≤ 39%** với độ tin cậy 95%. Nó **không chứng minh** lô đạt ≤ 2%.
+  2. **Người kiểm không độc lập:** vòng 4 do chính mình và trợ lý AI kiểm, mà img_024 lại do AI vừa sửa xong. Ba vòng trước cho thấy mỗi mẫu mới đều lộ ra lỗi mới, nên khả năng còn lỗi ở các ảnh chưa nằm trong mẫu nào (img_007, 009, 011, 015, 016, 019, 020, 030, 032, 036…) là có thật.
+  3. Còn nghi ngờ đã biết: ở img_024, các box `car` #340, #353, #349, #309 nằm trên vệt nhòe, khó xác nhận đúng lớp.
+  - Nếu dùng lô này cho việc quan trọng: cần một người thứ hai kiểm độc lập trên mẫu lớn hơn (≥ 10 ảnh) trước khi dùng.
 
 ## 8. Ghi chú cá nhân
 

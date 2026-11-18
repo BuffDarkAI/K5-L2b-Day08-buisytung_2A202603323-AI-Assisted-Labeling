@@ -1,0 +1,10 @@
+image,object_id,error_type,reviewer,note
+img_004.jpg,,khong,self+claude,"vòng 3: box người bên trái đã kéo tới chân; 4 tuk-tuk mỗi xe 1 box"
+img_008.jpg,,khong,self+claude,"xe đẩy hàng gán three_wheeler đúng theo CAL-01; không thấy lỗi rõ"
+img_017.jpg,,khong,self+claude,
+img_024.jpg,351,bo_sot,self+claude,"xe tay ga dưới người #351 (góc dưới trái) nhìn rõ nhưng không có box motorbike"
+img_024.jpg,349,bo_sot,self+claude,"xe máy dưới người #349 không có box motorbike"
+img_024.jpg,345,bo_sot,self+claude,"xe máy dưới người #345 (mép trái) không có box motorbike"
+img_024.jpg,338,bo_sot,self+claude,"xe máy dưới người #338 (góc dưới trái) không có box motorbike"
+img_024.jpg,,bo_sot,self+claude,"đám đông xe máy dày đặc góc trên phải (~x 800-1024, y 60-200) không có ignore_region; các xe quanh #342 #347 #333 cũng không có box"
+img_034.jpg,,khong,self+claude,"vòng 3: hàng xe đỗ bên phải mỗi xe 1 box"
